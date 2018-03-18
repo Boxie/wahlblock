@@ -10,8 +10,8 @@ import (
 )
 
 type Blockchain struct {
-	Chain []Block
-	CurrentTransactions []Transaction
+	Chain               []Block
+	PendingTransactions []Transaction
 
 }
 
@@ -36,7 +36,20 @@ func GetInstance() *Blockchain{
 
 
 /*
-Create a new block and add it to the chain
+	Function
+
+		New Block
+
+	Description
+
+		Create a new block and add it to the chain
+		Takes all pendingTransactions and add it to the new block
+
+	Parameter
+
+		int		proof			proof
+		string	previousHash	hash of the previous block of blockchain
+
  */
 
 func (bc *Blockchain) NewBlock(proof int, previousHash string) int{
@@ -48,36 +61,70 @@ func (bc *Blockchain) NewBlock(proof int, previousHash string) int{
 	block := Block {
 		len(bc.Chain),
 		time.Now(),
-		bc.CurrentTransactions,
+		bc.PendingTransactions,
 		proof,
 		previousHash,
 	}
 
-	bc.CurrentTransactions = bc.CurrentTransactions[:0]
+	bc.PendingTransactions = bc.PendingTransactions[:0]
 	bc.Chain = append(bc.Chain, block)
 
 	return len(bc.Chain) -1
 }
 
-/*
-Create a new transaction and add it to the chain
-Returns index of newTransaction (this index needs to be mined)
- */
+/**
+	Function
 
-func (bc *Blockchain) NewTransaction(sender string,recipient string, amount int) int{
+		New Transaction
+
+	Description
+
+		Create a new transaction and add it to the pendingTransactions list
+		Yet pending transactions are not permanently added to the blockchain. To add a transaction permanently to
+		Returns index of newTransaction (this index needs to be mined)
+
+	Parameter
+
+		string 	sender		ID of the sender
+		string 	recipient	ID of the recipient
+		int 	amount		amount of coins to transfer
+
+	Return
+
+		int		index of added transaction in pending transaction list
+
+	TODO Add transaction validation
+**/
+
+func (bc *Blockchain) NewTransaction(ballot string, voting string) int{
 	transaction := Transaction{
-		sender,
-		recipient,
-		amount,
+		Ballot: ballot,
+		Voting: voting,
+		Timestamp: time.Now(),
 	}
-	bc.CurrentTransactions = append(bc.CurrentTransactions, transaction)
+	bc.PendingTransactions = append(bc.PendingTransactions, transaction)
 
 	//return index of
-	return len(bc.CurrentTransactions) -1
+	return len(bc.PendingTransactions) -1
 }
 
 /*
-Create json of block and hash it
+	Function
+
+		Hash
+
+	Description
+
+		Creates a hash of a json formatted block by first creating a json file out of the given block and second
+		hashing the json file
+
+	Parameter
+
+		Block	block	block to be hashed
+
+	Return
+
+		string	hash of the given block
  */
 
 func (bc *Blockchain) Hash(block Block) string{
@@ -88,9 +135,41 @@ func (bc *Blockchain) Hash(block Block) string{
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
+/*
+	Function
+
+		LastBlock
+
+	Description
+
+		get and return the last block in blockchain
+
+	Return
+
+		Block	last Block in blockchain
+
+ */
+
 func (bc *Blockchain) LastBlock() Block{
 	return bc.Chain[len(bc.Chain) - 1]
 }
+
+/*
+	Function
+
+		ProofOfWork
+
+	Description
+
+		Mining algorithm to find the next valid proof
+		begins at 0 and last until valid proof is found
+
+	Parameter
+
+		int	lastProof	proof of last valid block of blockchain
+
+	Return
+ */
 
 func (bc *Blockchain) ProofOfWork(lastProof int) int {
 	proof := 0
@@ -99,6 +178,28 @@ func (bc *Blockchain) ProofOfWork(lastProof int) int {
 	}
 	return proof
 }
+
+/*
+	Function
+
+		validProof
+
+	Description
+
+		Interact with function ProofOfWork. Checks if the given proof is valid
+		Try to find a hash based on concatenation of the multiplication of two integers and the previous hash
+		which has at least four zeros at the end
+
+	Parameter
+
+		int		lastProof		proof of the last valid block in blockchain
+		int		proof			proof to check
+		string	previousHash
+
+	Return
+
+		bool	returns true if generated hash has at least four zeros at the end
+ */
 
 func (bc *Blockchain) validProof(lastProof int, proof int, previousHash string) bool{
 	//TODO Add Hasher to blockchain struct
@@ -113,16 +214,32 @@ func (bc *Blockchain) validProof(lastProof int, proof int, previousHash string) 
 	return guessHash[:4] == "0000"
 }
 
-type Block struct {
-	Index int
-	Timestamp time.Time
-	Transactions []Transaction
-	Proof int
-	PreviousHash string
-}
+/*
+	Function
 
-type Transaction struct {
-	Sender string
-	Recipient string
-	Amount int
-}
+		getVotings
+
+	Description
+
+		Get a map of all votings in blockchain. Does not count pending transactions
+
+	Return
+
+		map[string]int	returns a map with the voting term as key and the number of votes as value
+ */
+
+ func (bc Blockchain) getVotings() map[string] int {
+	 var votings map[string] int
+	 for _, block := range bc.Chain {
+		 if block.isValid(){
+			 for key, value := range block.GetVotings(){
+			 	votings[key] += value
+			 }
+		 }
+	 }
+	 return votings
+ }
+
+ func (bc Blockchain) averageTransactionPerBlock() float32 {
+ 	return 0
+ }
