@@ -1,15 +1,20 @@
 package main
 
 import (
-	"github.com/graphql-go/handler"
+
 	"net/http"
 	"github.com/graphql-go/graphql"
 	graph "github.com/boxie/wahlblock/graphql"
+
+	"github.com/boxie/wahlblock/config"
+	"github.com/graphql-go/handler"
 )
 
 
 
 func main() {
+
+	config.MigrateDatabase()
 
 	//Assign graphql to http handler
 	var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
@@ -32,6 +37,6 @@ func main() {
 	// pure API is reachable @ localhost:3000/graphql
 	http.Handle("/graphql", graphql)
 	http.Handle("/", fs)
-	http.ListenAndServe(":3001", nil)
+	http.ListenAndServe(":5000", nil)
 
 }
