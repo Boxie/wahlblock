@@ -31,14 +31,13 @@ var blockchainMutationType = graphql.NewObject(graphql.ObjectConfig{
 			Args: transactionArguments,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 
-				sender := p.Args["sender"].(string)
-				recipient := p.Args["recipient"].(string)
-				amount := p.Args["amount"].(int)
+				ballot := p.Args["ballot"].(string)
+				voting := p.Args["voting"].(string)
 
 				if blockchain, ok := p.Source.( *blockchain.Blockchain); ok {
 
-					index := blockchain.NewTransaction(sender, recipient, amount)
-					return blockchain.CurrentTransactions[index], nil
+					index := blockchain.NewTransaction(ballot, voting)
+					return blockchain.PendingTransactions[index], nil
 
 				}
 				return nil, nil
@@ -61,14 +60,7 @@ var blockchainMutationType = graphql.NewObject(graphql.ObjectConfig{
 
 					proof := blockchain.ProofOfWork(lastProof)
 
-					// reward for miner
-
-					blockchain.NewTransaction(
-						"0",
-						//TODO change recipient
-						"asd",
-						1,
-					)
+					//TODO Maybe reward miner?
 
 					// Forge new Block bz adding it to the chain
 
@@ -112,13 +104,10 @@ arguments
  */
 
 var transactionArguments = graphql.FieldConfigArgument{
-	"sender": &graphql.ArgumentConfig{
+	"ballot": &graphql.ArgumentConfig{
 		Type: graphql.String,
 	},
-	"recipient": &graphql.ArgumentConfig{
+	"voting": &graphql.ArgumentConfig{
 		Type: graphql.String,
-	},
-	"amount": &graphql.ArgumentConfig{
-		Type: graphql.Int,
 	},
 }

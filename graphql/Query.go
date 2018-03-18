@@ -40,7 +40,7 @@ var blockchainType = graphql.NewObject(graphql.ObjectConfig{
 				return nil, nil
 			},
 		},
-		"currentTransactions": &graphql.Field{
+		"pendingTransactions": &graphql.Field{
 			Type: graphql.NewList(transactionType),
 			Args: pagingArguments,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -51,9 +51,9 @@ var blockchainType = graphql.NewObject(graphql.ObjectConfig{
 				//validate offset and first
 				if pBlockchain, ok := p.Source.( *blockchain.Blockchain); ok {
 
-					start, end := calculatePaging(offset,first, len(pBlockchain.CurrentTransactions))
+					start, end := calculatePaging(offset,first, len(pBlockchain.PendingTransactions))
 
-					return pBlockchain.CurrentTransactions[start:end], nil
+					return pBlockchain.PendingTransactions[start:end], nil
 				}
 				return nil, nil
 			},
@@ -174,29 +174,20 @@ var blockType = graphql.NewObject(graphql.ObjectConfig{
 var transactionType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "transactionType",
 	Fields: graphql.Fields{
-		"sender": &graphql.Field{
+		"ballot": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if pTransaction, ok := p.Source.( blockchain.Transaction); ok {
-					return pTransaction.Sender, nil
+					return pTransaction.Ballot, nil
 				}
 				return nil, nil
 			},
 		},
-		"recipient": &graphql.Field{
+		"voting": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if pTransaction, ok := p.Source.( blockchain.Transaction); ok {
-					return pTransaction.Recipient, nil
-				}
-				return nil, nil
-			},
-		},
-		"amount": &graphql.Field{
-			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				if pTransaction, ok := p.Source.( blockchain.Transaction); ok {
-					return pTransaction.Amount, nil
+					return pTransaction.Voting, nil
 				}
 				return nil, nil
 			},
