@@ -2,7 +2,7 @@ package graphql
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/boxie/wahlblock/blockchain"
+	"github.com/boxie/wahlblock/src/main/blockchain"
 )
 
 var RootQuery = graphql.NewObject(graphql.ObjectConfig{
@@ -40,6 +40,32 @@ var blockchainType = graphql.NewObject(graphql.ObjectConfig{
 				return nil, nil
 			},
 		},
+		/*
+		"possibilities": &graphql.Field{
+			Type: graphql.NewList(graphql.String),
+			Description: "Returns array of blocks in chain",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				//TODO add transaction
+				//TODO add error handling
+				if pBlockchain, ok := p.Source.( *blockchain.Blockchain); ok {
+					return pBlockchain.GetPossibilities(), nil
+				}
+				return nil, nil
+			},
+		},
+		"count": &graphql.Field{
+			Type: graphql.NewList(graphql.Int),
+			Description: "Returns array of blocks in chain",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				//TODO add transaction
+				//TODO add error handling
+				if pBlockchain, ok := p.Source.( *blockchain.Blockchain); ok {
+					return pBlockchain.GetCount(), nil
+				}
+				return nil, nil
+			},
+		},
+		*/
 		"pendingTransactions": &graphql.Field{
 			Type: graphql.NewList(transactionType),
 			Args: pagingArguments,

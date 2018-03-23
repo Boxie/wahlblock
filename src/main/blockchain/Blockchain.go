@@ -240,6 +240,25 @@ func (bc *Blockchain) validProof(lastProof int, proof int, previousHash string) 
 	 return votings
  }
 
+ func (bc Blockchain) GetPossibilities() [] string{
+ 	print(len(bc.Chain))
+ 	var votings =  bc.getVotings()
+ 	var keys []string;
+ 	for key,_ := range(votings){
+ 		keys = append(keys,key)
+	}
+	return keys
+ }
+
+func (bc Blockchain) GetCount() [] int{
+	var votings =  bc.getVotings()
+	var values []int;
+	for _,value := range(votings){
+		values = append(values,value)
+	}
+	return values
+}
+
  func (bc Blockchain) averageTransactionPerBlock() float32 {
  	return 0
  }

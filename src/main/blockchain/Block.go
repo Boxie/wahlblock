@@ -15,6 +15,10 @@ type Block struct {
 
 func (b Block) GetVotings() map[string]int{
 	var votings map[string] int
+
+	print("VOTINGS: ")
+	print (votings)
+
 	for _, transaction := range b.Transactions {
 		if transaction.isValid(){
 			votings[transaction.Voting] += 1
