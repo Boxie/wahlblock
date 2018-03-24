@@ -28,16 +28,9 @@ func main() {
 		Pretty: true,
 	})
 
-
-	fs := http.FileServer(http.Dir("static"))
-
 	http.Handle("/graphql", graphql)
-	// static file server to serve Graphiql in-browser editor
-	// Reachable @ localhost:3000/
-	// serve HTTP
-	// pure API is reachable @ localhost:3000/graphql
-	http.Handle("/", fs)
-	http.ListenAndServe(":3001", nil)
+
+	http.ListenAndServe(":3000", nil)
 
 
 

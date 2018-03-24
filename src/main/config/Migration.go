@@ -12,7 +12,7 @@ import (
 
 func MigrateDatabase(){
 	migrations := &migrate.FileMigrationSource{
-		Dir: "config/migration",
+		Dir: "src/main/config/migration",
 	}
 
 	migrate.SetTable("migration_log")
@@ -23,11 +23,11 @@ func MigrateDatabase(){
 	}
 
 	n, err := migrate.Exec(db, "sqlite3", migrations, migrate.Up)
-	if (err != nil){
+	if err != nil {
 		panic("Can not connect to sqlite database!")
 	}
 
-	if (n > 0){
+	if n > 0 {
 		log.Println("INFO: Applied %d migrations", n)
 	} else {
 		log.Println("INFO: none migrations made")

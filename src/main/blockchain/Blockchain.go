@@ -214,6 +214,21 @@ func (bc *Blockchain) validProof(lastProof int, proof int, previousHash string) 
 	return guessHash[:4] == "0000"
 }
 
+func (bc *Blockchain) Mine () (int, error){
+
+	lastBlock := bc.LastBlock()
+	lastProof := lastBlock.Proof
+
+	proof := bc.ProofOfWork(lastProof)
+
+	//TODO Maybe reward miner?
+
+	previousHash := bc.Hash(lastBlock)
+	index := bc.NewBlock(proof, previousHash)
+
+	return bc.Chain[index].Index, nil
+}
+
 /*
 	Function
 
@@ -228,8 +243,8 @@ func (bc *Blockchain) validProof(lastProof int, proof int, previousHash string) 
 		map[string]int	returns a map with the voting term as key and the number of votes as value
  */
 
- func (bc Blockchain) getVotings() map[string] int {
-	 var votings map[string] int
+ func (bc *Blockchain) getVotings() map[string] int {
+	 var votings = make (map[string] int)
 	 for _, block := range bc.Chain {
 		 if block.isValid(){
 			 for key, value := range block.GetVotings(){
@@ -240,8 +255,16 @@ func (bc *Blockchain) validProof(lastProof int, proof int, previousHash string) 
 	 return votings
  }
 
- func (bc Blockchain) GetPossibilities() [] string{
- 	print(len(bc.Chain))
+ func (bc *Blockchain) GetBlockCount() int{
+ 	return len(bc.Chain)
+ }
+
+ func (bc *Blockchain) GetPendingTransactionCount() int {
+ 	return len(bc.PendingTransactions)
+ }
+
+ func (bc *Blockchain) GetPossibilities() [] string{
+
  	var votings =  bc.getVotings()
  	var keys []string;
  	for key,_ := range(votings){
@@ -250,7 +273,7 @@ func (bc *Blockchain) validProof(lastProof int, proof int, previousHash string) 
 	return keys
  }
 
-func (bc Blockchain) GetCount() [] int{
+func (bc *Blockchain) GetVotingCount() [] int{
 	var votings =  bc.getVotings()
 	var values []int;
 	for _,value := range(votings){
@@ -259,6 +282,6 @@ func (bc Blockchain) GetCount() [] int{
 	return values
 }
 
- func (bc Blockchain) averageTransactionPerBlock() float32 {
+ func (bc *Blockchain) averageTransactionPerBlock() float32 {
  	return 0
  }

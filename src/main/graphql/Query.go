@@ -60,7 +60,7 @@ var blockchainType = graphql.NewObject(graphql.ObjectConfig{
 				//TODO add transaction
 				//TODO add error handling
 				if pBlockchain, ok := p.Source.( *blockchain.Blockchain); ok {
-					return pBlockchain.GetCount(), nil
+					return pBlockchain.GetVotingCount(), nil
 				}
 				return nil, nil
 			},

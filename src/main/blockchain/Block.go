@@ -14,10 +14,7 @@ type Block struct {
 
 
 func (b Block) GetVotings() map[string]int{
-	var votings map[string] int
-
-	print("VOTINGS: ")
-	print (votings)
+	var votings = make(map[string] int)
 
 	for _, transaction := range b.Transactions {
 		if transaction.isValid(){
@@ -29,4 +26,8 @@ func (b Block) GetVotings() map[string]int{
 
 func (b Block) isValid() bool{
 	return true
+}
+
+func (b Block) GetTransactionCount() int{
+	return len(b.Transactions)
 }
