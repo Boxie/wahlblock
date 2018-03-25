@@ -40,7 +40,7 @@ var blockchainType = graphql.NewObject(graphql.ObjectConfig{
 				return nil, nil
 			},
 		},
-		/*
+
 		"possibilities": &graphql.Field{
 			Type: graphql.NewList(graphql.String),
 			Description: "Returns array of blocks in chain",
@@ -65,7 +65,7 @@ var blockchainType = graphql.NewObject(graphql.ObjectConfig{
 				return nil, nil
 			},
 		},
-		*/
+
 		"pendingTransactions": &graphql.Field{
 			Type: graphql.NewList(transactionType),
 			Args: pagingArguments,

@@ -2,7 +2,6 @@ package graphql
 
 import (
 	"github.com/graphql-go/graphql"
-	"fmt"
 	"github.com/boxie/wahlblock/src/main/blockchain"
 )
 
@@ -51,23 +50,13 @@ var blockchainMutationType = graphql.NewObject(graphql.ObjectConfig{
 
 				if blockchain, ok := p.Source.( *blockchain.Blockchain); ok {
 
-					// start mining
+					index, err := blockchain.Mine()
 
-					// TODO errorHandling
-					fmt.Println(len(blockchain.Chain))
-					lastBlock := blockchain.LastBlock()
-					lastProof := lastBlock.Proof
+					if err != nil{
+						panic(err)
+					}
 
-					proof := blockchain.ProofOfWork(lastProof)
-
-					//TODO Maybe reward miner?
-
-					// Forge new Block bz adding it to the chain
-
-					previousHash := blockchain.Hash(lastBlock)
-					index := blockchain.NewBlock(proof, previousHash)
-
-					return blockchain.Chain[index], nil
+					return blockchain.Chain[index], err
 
 				}
 				return nil, nil
@@ -76,32 +65,6 @@ var blockchainMutationType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
-
-
-/* inputs
-
-var transactionInputType = graphql.NewInputObject(
-	graphql.InputObjectConfig{
-		Name: "transactionInputType",
-		Fields: graphql.InputObjectConfigFieldMap{
-			"sender": &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			"recipient": &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
-			},
-			"amount": &graphql.InputObjectFieldConfig{
-				Type: graphql.Int,
-			},
-		},
-	},
-)
-
-*/
-
-/*
-arguments
- */
 
 var transactionArguments = graphql.FieldConfigArgument{
 	"ballot": &graphql.ArgumentConfig{

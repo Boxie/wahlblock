@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"sync"
 	"fmt"
+	"sort"
 )
 
 type Blockchain struct {
@@ -266,22 +267,29 @@ func (bc *Blockchain) Mine () (int, error){
  func (bc *Blockchain) GetPossibilities() [] string{
 
  	var votings =  bc.getVotings()
- 	var keys []string;
- 	for key,_ := range(votings){
- 		keys = append(keys,key)
-	}
-	return keys
+
+	 keys := make([]string, 0, len(votings))
+	 for key := range votings {
+		 keys = append(keys, key)
+	 }
+	 sort.Strings(keys) //sort by key
+
+	 return keys
  }
 
 func (bc *Blockchain) GetVotingCount() [] int{
+
 	var votings =  bc.getVotings()
-	var values []int;
-	for _,value := range(votings){
-		values = append(values,value)
+
+	keys := make([]string, 0, len(votings))
+	for key := range votings {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	var values []int
+	for _,key := range keys{
+		values = append(values,votings[key])
 	}
 	return values
 }
-
- func (bc *Blockchain) averageTransactionPerBlock() float32 {
- 	return 0
- }
