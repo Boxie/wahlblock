@@ -12,7 +12,7 @@ import (
 
 func MigrateDatabase(){
 	migrations := &migrate.FileMigrationSource{
-		Dir: "src/main/config/migration",
+		Dir: "config/migration",
 	}
 
 	migrate.SetTable("migration_log")

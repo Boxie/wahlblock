@@ -1,12 +1,11 @@
-package Blockchain
+package blockchain
 
 import (
 	"testing"
-	"github.com/boxie/wahlblock/src/main/blockchain"
 )
 
 func TestBlockchain(t *testing.T) {
-	var bc = blockchain.GetInstance()
+	var bc = GetInstance()
 	var blockIndex int
 
 	t.Run("Add transaction", func(t *testing.T) {

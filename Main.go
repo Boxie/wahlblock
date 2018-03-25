@@ -4,9 +4,9 @@ import (
 
 	"net/http"
 	"github.com/graphql-go/graphql"
-	graph "github.com/boxie/wahlblock/src/main/graphql"
+	graph "github.com/boxie/wahlblock/graphql"
 
-	"github.com/boxie/wahlblock/src/main/config"
+	"github.com/boxie/wahlblock/config"
 	"github.com/graphql-go/handler"
 )
 
@@ -31,7 +31,5 @@ func main() {
 	http.Handle("/graphql", graphql)
 
 	http.ListenAndServe(":3000", nil)
-
-
 
 }

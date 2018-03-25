@@ -2,7 +2,7 @@ package graphql
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/boxie/wahlblock/src/main/blockchain"
+	"github.com/boxie/wahlblock/blockchain"
 )
 
 var RootMutation = graphql.NewObject(graphql.ObjectConfig{

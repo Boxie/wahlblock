@@ -1,7 +1,7 @@
 package blockchain
 
 type Node struct {
-	host string
-	port int
+	Host string
+	Port int
 }
 

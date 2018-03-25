@@ -1,6 +1,6 @@
 package blockchain
 
 type Consens struct {
-	activeNodes []Node
+	ActiveNodes []Node
 
 }
