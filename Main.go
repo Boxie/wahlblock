@@ -22,20 +22,30 @@ func main() {
 		Mutation: graph.RootMutation,
 	})
 
-
 	graphql := handler.New(&handler.Config{
 		Schema: &schema,
 		Pretty: true,
 
 	})
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
-		w.Header().Set("Access-Control-Allow-Origin","*")
+	myhandler := accessControl(graphql)
+
+	http.Handle("/graphql", myhandler)
+
+	http.ListenAndServe(":3000", nil)
+
+}
+
+func accessControl(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, content-type")
+
+		if r.Method == "OPTIONS" {
+			return
+		}
+
+		h.ServeHTTP(w, r)
 	})
-
-	http.Handle("/graphql", graphql)
-
-	http.ListenAndServe(":3000", mux)
-
 }
