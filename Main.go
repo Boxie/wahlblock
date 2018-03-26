@@ -26,10 +26,16 @@ func main() {
 	graphql := handler.New(&handler.Config{
 		Schema: &schema,
 		Pretty: true,
+
+	})
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
+		w.Header().Set("Access-Control-Allow-Origin","*")
 	})
 
 	http.Handle("/graphql", graphql)
 
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":3000", mux)
 
 }
