@@ -8,11 +8,19 @@ import (
 
 	"github.com/boxie/wahlblock/config"
 	"github.com/graphql-go/handler"
+	up "github.com/ufoscout/go-up"
 )
 
 
 
 func main() {
+
+	cfg, _ := up.NewGoUp().
+		AddFile("./config.properties", true).
+		Build()
+
+
+	port := cfg.GetStringOrDefault("wahlblock.port","3000")
 
 	config.MigrateDatabase()
 
@@ -32,7 +40,7 @@ func main() {
 
 	http.Handle("/graphql", myhandler)
 
-	http.ListenAndServe(":3000", nil)
+	http.ListenAndServe(":" + port , nil)
 
 }
 
