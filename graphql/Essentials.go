@@ -2,13 +2,20 @@ package graphql
 
 //TODO Check if length = int
 func calculatePaging(offset int, first int, length int) (int, int){
-	if offset > length - 1{
-		return length, length
+
+	if offset < 0 || first <= 0 {
+		return 0,0
 	}
 
-	if offset + first > length - 1 {
+	if offset < length {
+
+		if offset + first < length{
+			return offset, offset + first
+		}
+
 		return offset, length
+
 	}
 
-	return offset, first + offset
+	return 0,0
 }
