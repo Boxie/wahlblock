@@ -6,15 +6,12 @@ import (
 	"github.com/graphql-go/graphql"
 	graph "github.com/boxie/wahlblock/graphql"
 
-	"github.com/boxie/wahlblock/config"
 	"github.com/graphql-go/handler"
 )
 
 
 
 func main() {
-
-	config.MigrateDatabase()
 
 	//Assign graphql to http handler
 	var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
