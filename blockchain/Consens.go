@@ -137,7 +137,7 @@ func (n Node) getAllTransactionFromBlock(index int) []Transaction{
 					Transactions []struct {
 						Ballot graphql.String
 						Voting graphql.String
-					} `graphql:"transaction(offset: $offset, first: $first)"`
+					} `graphql:"transactions(offset: $offset, first: $first)"`
 				} `graphql:"block(index: $index)"`
 			}
 		}
@@ -150,9 +150,9 @@ func (n Node) getAllTransactionFromBlock(index int) []Transaction{
 
 	for notEnd{
 		v := map[string]interface{}{
-			"offset": currentNumber,
-			"first": currentNumber + 100,
-			"index": index,
+			"offset": graphql.Int(currentNumber),
+			"first": graphql.Int(100),
+			"index": graphql.Int(index),
 		}
 
 		err := client.Query(context.Background(), &q, v)
@@ -169,9 +169,59 @@ func (n Node) getAllTransactionFromBlock(index int) []Transaction{
 		}
 		currentNumber += 100
 
-		if len(transactions) <= currentNumber{
+		if len(transactions) < currentNumber{
 			notEnd = false
 		}
 	}
 	return transactions
+}
+
+func (c Consens) GetNodesWithLatestChain () []Node{
+	var q struct {
+		Blockchain struct {
+			Chain struct {
+				Length graphql.Int
+				LastHash graphql.String
+			}
+		}
+	}
+
+	var copyNodes = make(map[string][]Node,0)
+	var longestCount = 0
+
+	for _, n := range c.ActiveNodes {
+		client := graphql.NewClient(n.getAddress(), nil)
+		err := client.Query(context.Background(), &q, nil)
+		if err != nil {
+			// Handle error.
+		}
+
+		if int(q.Blockchain.Chain.Length) > longestCount {
+			longestCount = int(q.Blockchain.Chain.Length)
+			for k := range copyNodes {
+				delete(copyNodes, k)
+			}
+		}
+		if int(q.Blockchain.Chain.Length) >= longestCount {
+			hash := string(q.Blockchain.Chain.LastHash)
+			copyNodes[hash] = append(copyNodes[hash],n)
+		}
+	}
+
+	var total = 0
+	var mostSupportedHash string
+	var highestCount int
+
+	for k,v := range copyNodes {
+		total += len(v)
+		if len(v) > highestCount {
+			highestCount = len(v)
+			mostSupportedHash = k
+		}
+	}
+
+	if float32(highestCount / total) >= 0.51 {
+		return copyNodes[mostSupportedHash]
+	}
+	return nil
 }

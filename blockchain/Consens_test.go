@@ -4,6 +4,7 @@ import (
 "testing"
 
 	"time"
+	"fmt"
 )
 
 func TestConsens(t *testing.T) {
@@ -62,6 +63,15 @@ func TestConsens(t *testing.T) {
 
 		for transaction := range transactions {
 			println(transaction)
+		}
+	})
+
+	t.Run("Get nodes with latest chain", func(t *testing.T){
+
+		nodes := con.GetNodesWithLatestChain()
+
+		for _,node := range nodes {
+			fmt.Println(node.Host)
 		}
 	})
 }

@@ -113,6 +113,16 @@ var chainType = graphql.NewObject(graphql.ObjectConfig{
 				return nil, nil
 			},
 		},
+		"lastHash": &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				//TODO add error handling
+				if chain, ok := p.Source.([]blockchain.Block); ok {
+					return chain[len(chain)-1].Hash(), nil
+				}
+				return nil, nil
+			},
+		},
 		"block": &graphql.Field{
 			Type: blockType,
 			Args: indexArguments,

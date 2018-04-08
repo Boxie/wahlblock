@@ -2,7 +2,6 @@ package blockchain
 
 import (
 	"time"
-	"encoding/json"
 	"crypto/sha256"
 	"encoding/hex"
 	"sort"
@@ -33,7 +32,7 @@ type Blockchain struct {
 func (bc *Blockchain) NewBlock(proof int, previousHash string) int{
 
 	if len(previousHash) == 0 {
-		previousHash = bc.Hash(bc.LastBlock())
+		previousHash = bc.LastBlock().Hash()
 	}
 
 	block := Block {
@@ -92,33 +91,6 @@ func (bc *Blockchain) NewTransaction(ballot string, voting string) int{
 
 	//TODO add Error
 	return 0
-}
-
-/*
-	Function
-
-		Hash
-
-	Description
-
-		Creates a hash of a json formatted block by first creating a json file out of the given block and second
-		hashing the json file
-
-	Parameter
-
-		Block	block	block to be hashed
-
-	Return
-
-		string	hash of the given block
- */
-
-func (bc *Blockchain) Hash(block Block) string{
-	//TODO Add Hasher to blockchain struct
-	hasher := sha256.New()
-	blockString, _:= json.Marshal(block)
-	hasher.Write([]byte (blockString))
-	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 /*
@@ -209,7 +181,7 @@ func (bc *Blockchain) Mine () (int, error){
 
 	//TODO Maybe reward miner?
 
-	previousHash := bc.Hash(lastBlock)
+	previousHash := lastBlock.Hash()
 	index := bc.NewBlock(proof, previousHash)
 
 	return bc.Chain[index].Index, nil
