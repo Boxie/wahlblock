@@ -3,6 +3,7 @@ package graphql
 import (
 	"github.com/graphql-go/graphql"
 	"github.com/boxie/wahlblock/blockchain"
+	"time"
 )
 
 var RootMutation = graphql.NewObject(graphql.ObjectConfig{
@@ -15,8 +16,19 @@ var RootMutation = graphql.NewObject(graphql.ObjectConfig{
 
 				//TODO Error handling
 
-				var chain = blockchain.GetInstance()
+				var chain = blockchain.GetSession().Blockchain
 				return chain, nil
+			},
+		},
+		"consens": &graphql.Field {
+			Type: consensMutationType,
+			Description: "Consens mutation",
+			Resolve: func(p graphql.ResolveParams) (interface{}, error){
+
+				//TODO Error handling
+
+				var consens = blockchain.GetSession().Consens
+				return consens, nil
 			},
 		},
 	},
@@ -65,12 +77,55 @@ var blockchainMutationType = graphql.NewObject(graphql.ObjectConfig{
 	},
 })
 
+var consensMutationType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "consensMutationType",
+	Fields: graphql.Fields{
+		"register": &graphql.Field{
+			Type: graphql.Boolean,
+			Args: nodeArguments,
+			Resolve: func(p graphql.ResolveParams) (interface {}, error) {
+
+				host := p.Args["host"].(string)
+				port := p.Args["port"].(int)
+				registrant := p.Args["registrant"].(string)
+
+				if consens, ok := p.Source.( *blockchain.Consens); ok {
+
+					node := blockchain.Node{
+						Host: host,
+						Port: port,
+						Registrant: registrant,
+						RegisteredAt: time.Now(),
+					}
+
+					consens.Add(node)
+
+					return true , nil
+
+				}
+				return false, nil
+			},
+		},
+	},
+})
 
 var transactionArguments = graphql.FieldConfigArgument{
 	"ballot": &graphql.ArgumentConfig{
 		Type: graphql.String,
 	},
 	"voting": &graphql.ArgumentConfig{
+		Type: graphql.String,
+	},
+}
+
+var nodeArguments = graphql.FieldConfigArgument{
+	"host": &graphql.ArgumentConfig{
+		Type: graphql.String,
+	},
+	"port": &graphql.ArgumentConfig{
+		Type: graphql.Int,
+	},
+	"registrant": &graphql.ArgumentConfig{
 		Type: graphql.String,
 	},
 }
