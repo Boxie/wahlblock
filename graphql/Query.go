@@ -12,11 +12,24 @@ var RootQuery = graphql.NewObject(graphql.ObjectConfig{
 			Type: blockchainType,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				//TODO add error handling
-				pChain := blockchain.GetInstance()
+				pChain := blockchain.GetSession().Blockchain
 				return pChain, nil
 			},
 		},
-		//TODO ADD Nodes
+		"consens": &graphql.Field{
+			Type: consensType,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				//TODO add error handling
+				pConsens := blockchain.GetSession().Consens
+				return pConsens, nil
+			},
+		},
+		"status": &graphql.Field{
+			Type: graphql.Boolean,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return true, nil
+			},
+		},
 	},
 })
 
@@ -214,6 +227,124 @@ var transactionType = graphql.NewObject(graphql.ObjectConfig{
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				if pTransaction, ok := p.Source.( blockchain.Transaction); ok {
 					return pTransaction.Voting, nil
+				}
+				return nil, nil
+			},
+		},
+	},
+})
+
+var consensType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "consensType",
+	Fields: graphql.Fields{
+		"count": &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if pConsens, ok := p.Source.( *blockchain.Consens); ok {
+					return pConsens.GetCount(), nil
+				}
+				return nil, nil
+			},
+		},
+		"node": &graphql.Field{
+			Type: nodeType,
+			Args: graphql.FieldConfigArgument{
+				"host": &graphql.ArgumentConfig{
+					Type: graphql.String,
+				},
+				"port": &graphql.ArgumentConfig{
+					Type: graphql.Int,
+				},
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				host := p.Args["host"].(string)
+				port := p.Args["port"].(int)
+
+				if pConsens, ok := p.Source.( *blockchain.Consens); ok {
+
+					//Fake Node
+					node := blockchain.Node{
+						Host: host,
+						Port: port,
+					}
+
+					return pConsens.NodeGetByHash(node.GetHash()), nil
+				}
+				return nil, nil
+			},
+		},
+		"nodes": &graphql.Field{
+			Type: graphql.NewList(nodeType),
+			Args: pagingArguments,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				offset := p.Args["offset"].(int)
+				first := p.Args["first"].(int)
+
+				if pConsens, ok := p.Source.( *blockchain.Consens); ok {
+
+					start, end := calculatePaging(offset, first, pConsens.GetCount())
+					return pConsens.GetNodes(start,end), nil
+				}
+
+				return nil, nil
+			},
+		},
+	},
+})
+
+var nodeType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "nodeType",
+	Fields: graphql.Fields{
+		"hash": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if pNode, ok := p.Source.( blockchain.Node); ok {
+					return pNode.GetHash(), nil
+				}
+				return nil, nil
+			},
+		},
+		"host": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if pNode, ok := p.Source.( blockchain.Node); ok {
+					return pNode.Host, nil
+				}
+				return nil, nil
+			},
+		},
+		"port": &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if pNode, ok := p.Source.( blockchain.Node); ok {
+					return pNode.Port, nil
+				}
+				return nil, nil
+			},
+		},
+		"registrant": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if pNode, ok := p.Source.( blockchain.Node); ok {
+					return pNode.Registrant, nil
+				}
+				return nil, nil
+			},
+		},
+		"registeredAt": &graphql.Field{
+			Type: graphql.DateTime,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if pNode, ok := p.Source.( blockchain.Node); ok {
+					return pNode.RegisteredAt, nil
+				}
+				return nil, nil
+			},
+		},
+		"lastMessageAt": &graphql.Field{
+			Type: graphql.DateTime,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if pNode, ok := p.Source.( blockchain.Node); ok {
+					return pNode.LastMessageAt, nil
 				}
 				return nil, nil
 			},

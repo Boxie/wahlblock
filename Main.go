@@ -6,23 +6,12 @@ import (
 	"github.com/graphql-go/graphql"
 	graph "github.com/boxie/wahlblock/graphql"
 
-	"github.com/boxie/wahlblock/config"
 	"github.com/graphql-go/handler"
-	up "github.com/ufoscout/go-up"
 )
 
 
 
 func main() {
-
-	cfg, _ := up.NewGoUp().
-		AddFile("./config.properties", true).
-		Build()
-
-
-	port := cfg.GetStringOrDefault("wahlblock.port","3000")
-
-	config.MigrateDatabase()
 
 	//Assign graphql to http handler
 	var schema, _ = graphql.NewSchema(graphql.SchemaConfig{
@@ -40,7 +29,7 @@ func main() {
 
 	http.Handle("/graphql", myhandler)
 
-	http.ListenAndServe(":" + port , nil)
+	http.ListenAndServe(":3000", nil)
 
 }
 

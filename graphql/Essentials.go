@@ -10,10 +10,10 @@ func calculatePaging(offset int, first int, length int) (int, int){
 	if offset < length {
 
 		if offset + first < length{
-			return offset, offset + first
+			return offset, offset + first - 1
 		}
 
-		return offset, length
+		return offset, length - 1
 
 	}
 

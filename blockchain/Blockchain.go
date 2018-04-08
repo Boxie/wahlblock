@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"crypto/sha256"
 	"encoding/hex"
-	"sync"
-	"fmt"
 	"sort"
 )
 
@@ -15,27 +13,6 @@ type Blockchain struct {
 	PendingTransactions []Transaction
 
 }
-
-/* Blockchain Singleton
-
-
- */
-
-var instance *Blockchain
-var once sync.Once
-
-func GetInstance() *Blockchain{
-	once.Do(func() {
-		instance = &Blockchain{}
-		instance.Chain = make([] Block, 0)
-		instance.NewBlock(1,"None")
-		fmt.Println("Instance: ",len(instance.Chain))
-	})
-	return instance
-}
-
-
-
 /*
 	Function
 
