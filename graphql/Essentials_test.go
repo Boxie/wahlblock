@@ -14,11 +14,11 @@ func TestGraphQLEssentials(t *testing.T) {
 			ExpectedOffset int
 			ExpectedFirst int
 		}{
-			{0,10, 5, 0, 4},
-			{7, 10, 3, 0,0},
-			{1, 3, 10, 1,3},
-			{10, 20, 100, 10,29},
-			{0, 10, 1, 0,0},
+			{0,10, 5, 0, 5},
+			{7, 10, 3, 0,1},
+			{1, 3, 10, 1,4},
+			{10, 20, 100, 10,30},
+			{0, 10, 1, 0,1},
 		}
 
 		for index,c := range cases {

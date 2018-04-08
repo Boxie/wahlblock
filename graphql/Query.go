@@ -181,9 +181,15 @@ var blockType = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"transactions": &graphql.Field{
 			Type: graphql.NewList(transactionType),
+			Args: pagingArguments,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+
+				offset := p.Args["offset"].(int)
+				first := p.Args["first"].(int)
+
 				if block, ok := p.Source.(blockchain.Block); ok {
-					return block.Transactions, nil
+					start, end := calculatePaging(offset,first, block.GetTransactionCount())
+					return block.Transactions[start:end], nil
 				}
 				return nil, nil
 			},

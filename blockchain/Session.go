@@ -24,7 +24,17 @@ func GetSession() *Session{
 			},
 		}
 		instance.Blockchain.NewBlock(1,"None")
+		instance.addCommonServer()
 	})
 	return instance
 }
 
+func (s Session) addCommonServer(){
+
+	nodes := []Node{
+		{Host: "5.196.97.83", Port: 3000, Registrant: "Common server"},
+	}
+
+	s.Consens.AddAll(nodes)
+
+}

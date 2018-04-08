@@ -44,7 +44,7 @@ func TestConsens(t *testing.T) {
 
 	t.Run("Get specific nodes by host string", func (t *testing.T){
 		for _,c := range cases {
-			node := con.NodeGetByHost(c.Host)
+			node := con.NodeGetByHash(c.Host)
 			if node.Host != c.Host || node.Port != c.Port || node.Registrant != c.Registrant{
 				t.Error("Get specific nodes by host failed")
 			}
@@ -52,7 +52,16 @@ func TestConsens(t *testing.T) {
 		t.Log("Finished get specific nodes")
 	})
 
-	t.Run("Get list of nodes", func(t *testing.T){
+	t.Run("Get all transactions from node", func(t *testing.T){
+		n := Node{
+			Host: "5.196.97.83",
+			Port: 3000,
+		}
 
+		transactions := n.getAllTransactionFromBlock(1)
+
+		for transaction := range transactions {
+			println(transaction)
+		}
 	})
 }

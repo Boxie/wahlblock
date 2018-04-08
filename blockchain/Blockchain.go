@@ -80,10 +80,18 @@ func (bc *Blockchain) NewTransaction(ballot string, voting string) int{
 		Voting: voting,
 		Timestamp: time.Now(),
 	}
-	bc.PendingTransactions = append(bc.PendingTransactions, transaction)
 
-	//return index of
-	return len(bc.PendingTransactions) -1
+	if transaction.isValid() {
+		bc.PendingTransactions = append(bc.PendingTransactions, transaction)
+
+		//TODO Refactoring Session Call
+		GetSession().Consens.broadcastTransaction(transaction)
+
+		return len(bc.PendingTransactions) -1
+	}
+
+	//TODO add Error
+	return 0
 }
 
 /*
