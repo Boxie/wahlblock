@@ -252,16 +252,23 @@ var consensType = graphql.NewObject(graphql.ObjectConfig{
 				"host": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
+				"port": &graphql.ArgumentConfig{
+					Type: graphql.Int,
+				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				host, err := p.Args["host"].(string)
-
-				if err {
-					//TODO Add error handling
-				}
+				host := p.Args["host"].(string)
+				port := p.Args["port"].(int)
 
 				if pConsens, ok := p.Source.( *blockchain.Consens); ok {
-					return pConsens.NodeGetByHost(host), nil
+
+					//Fake Node
+					node := blockchain.Node{
+						Host: host,
+						Port: port,
+					}
+
+					return pConsens.NodeGetByHash(node.GetHash()), nil
 				}
 				return nil, nil
 			},
@@ -288,6 +295,15 @@ var consensType = graphql.NewObject(graphql.ObjectConfig{
 var nodeType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "nodeType",
 	Fields: graphql.Fields{
+		"hash": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if pNode, ok := p.Source.( blockchain.Node); ok {
+					return pNode.GetHash(), nil
+				}
+				return nil, nil
+			},
+		},
 		"host": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {

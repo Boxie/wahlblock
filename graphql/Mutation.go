@@ -98,9 +98,9 @@ var consensMutationType = graphql.NewObject(graphql.ObjectConfig{
 						RegisteredAt: time.Now(),
 					}
 
-					consens.Add(node)
+					success := consens.Add(node)
 
-					return true , nil
+					return success , nil
 
 				}
 				return false, nil
