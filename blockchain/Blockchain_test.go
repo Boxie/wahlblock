@@ -5,7 +5,7 @@ import (
 )
 
 func TestBlockchain(t *testing.T) {
-	var bc = GetInstance()
+	var bc = GetSession().Blockchain
 	var blockIndex int
 
 	t.Run("Add transaction", func(t *testing.T) {
@@ -36,7 +36,7 @@ func TestBlockchain(t *testing.T) {
 				t.Fail()
 			}
 		}
-		t.Log("Successfully added four votings (3 Yes, 1 No)")
+		t.Log("Successfully added four votings (5 Yes, 3 No)")
 	})
 
 	t.Run("Mining block", func(t *testing.T) {
