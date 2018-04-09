@@ -9,6 +9,7 @@ import (
 	"encoding/hex"
 	"strings"
 	"regexp"
+	log "github.com/sirupsen/logrus"
 )
 
 type Consens struct {
@@ -106,24 +107,29 @@ func validIP4(ipAddress string) bool {
 func (c Consens) broadcastTransaction(t Transaction){
 	var m struct {
 		Blockchain struct {
-			AddTransaction struct {
+			TransactionAdd struct {
 				Ballot graphql.String
 				Voting graphql.String
-			} `graphql:"addTransaction(ballot: $ballot, voting: $voting)"`
+			} `graphql:"transactionAdd(ballot: $ballot, voting: $voting)"`
 		}
 	}
 
 	v := map[string]interface{}{
+		"ballot": graphql.String(t.Ballot),
+		"voting": graphql.String(t.Voting),
+	}
+
+	log.WithFields(log.Fields{
 		"ballot": t.Ballot,
 		"voting": t.Voting,
-	}
+	}).Info("Broadcasting transaction")
 
 	for _,node := range c.ActiveNodes{
 		client := graphql.NewClient(node.getAddress(), nil)
 
 		err := client.Mutate(context.Background(), &m, v)
-		if err != nil {
-			println("Error")
+		if err != nil{
+			print(err)
 		}
 	}
 

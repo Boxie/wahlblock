@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"sort"
+	log "github.com/sirupsen/logrus"
 )
 
 type Blockchain struct {
@@ -46,6 +47,11 @@ func (bc *Blockchain) NewBlock(proof int, previousHash string) int{
 	bc.PendingTransactions = bc.PendingTransactions[:0]
 	bc.Chain = append(bc.Chain, block)
 
+	log.WithFields(log.Fields{
+		"index": block.Index,
+		"timestamp": block.Timestamp,
+	}).Info("Added block to chain")
+
 	return len(bc.Chain) -1
 }
 
@@ -85,6 +91,11 @@ func (bc *Blockchain) NewTransaction(ballot string, voting string) int{
 
 		//TODO Refactoring Session Call
 		GetSession().Consens.broadcastTransaction(transaction)
+
+		log.WithFields(log.Fields{
+			"ballot": transaction.Ballot,
+			"voting": transaction.Voting,
+		}).Info("Added transaction to pending transaction")
 
 		return len(bc.PendingTransactions) -1
 	}
@@ -169,7 +180,7 @@ func (bc *Blockchain) validProof(lastProof int, proof int, previousHash string) 
 	hasher.Write(guess)
 	guessHash := hex.EncodeToString(hasher.Sum(nil))
 	//TODO add validation to blockchain struct
-	return guessHash[:4] == "0000"
+	return guessHash[:2] == "00"
 }
 
 func (bc *Blockchain) Mine () (int, error){
@@ -178,8 +189,6 @@ func (bc *Blockchain) Mine () (int, error){
 	lastProof := lastBlock.Proof
 
 	proof := bc.ProofOfWork(lastProof)
-
-	//TODO Maybe reward miner?
 
 	previousHash := lastBlock.Hash()
 	index := bc.NewBlock(proof, previousHash)
